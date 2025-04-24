@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중국인 나머지 정리 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container { background-color: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 10px; }
+        input, button { font-size: 16px; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { background-color: #4CAF50; color: #fff; cursor: pointer; }
+        button:hover { background-color: #3e8e41; }
+        .delete-btn { background-color: #f44336; color: white; }
+        .delete-btn:hover { background-color: #d32f2f; }
+        #result, #steps { margin-top: 20px; padding: 10px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 5px; }
+        #steps { white-space: pre-wrap; font-family: monospace; }
+        .input-group { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>중국인 나머지 정리 계산기</h1>
+        <div id="inputs">
+            <div class="input-group">
+                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17">
+                <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">
+                <button class="delete-btn" onclick="deleteInput(this)">삭제</button>
+            </div>
+        </div>
+        <button onclick="addInput()">입력 추가</button>
+        <button onclick="calculateCRT()">계산하기</button>
+        <div id="result"></div>
+        <div id="steps"></div>
+    </div>
+
+    <script>
+        function powMod(base, exponent, modulus) {
+            if (modulus <= 0) return NaN;
+            base = BigInt(base);
+            exponent = BigInt(exponent);
+            modulus = BigInt(modulus);
+            let result = 1n;
+            base = base % modulus;
+            while (exponent > 0n) {
+                if (exponent % 2n === 1n) result = (result * base) % modulus;
+                exponent = exponent / 2n;
+                base = (base * base) % modulus;
+            }
+            return Number(result);
+        }
+
+        function evaluateExpression(expr, modulus) {
+            try {
+                const exponentParts = expr.split('^');
+                if (exponentParts.length === 2 && modulus) {
+                    return powMod(exponentParts[0], exponentParts[1], modulus);
+                }
+                const value = BigInt(expr.replace(/\^/g, '**'));
+                return modulus ? Number(value % BigInt(modulus)) : Number(value);
+            } catch (e) {
+                return NaN;
+            }
+        }
+
+        function addInput() {
+            const inputsDiv = document.getElementById('inputs');
+            const newInputGroup = document.createElement('div');
+            newInputGroup.classList.add('input-group');
+            newInputGroup.innerHTML = `
+                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17">
+                <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">
+                <button class="delete-btn" onclick="deleteInput(this)">삭제</button>`;
+            inputsDiv.appendChild(newInputGroup);
+        }
+
+        function deleteInput(btn) {
+            if (document.querySelectorAll('.input-group').length > 1) {
+                btn.parentElement.remove();
+            } else {
+                alert("최소 하나의 입력은 남아야 합니다!");
+            }
+        }
+
+        function calculateCRT() {
+            const groups = document.querySelectorAll('.input-group');
+            const pairs = [];
+            
+            for (const group of groups) {
+                const mod = evaluateExpression(group.querySelector('.mod').value);
+                const rem = evaluateExpression(group.querySelector('.rem').value, mod);
+                if (isNaN(mod) || isNaN(rem)) {
+                    document.getElementById('result').innerText = "잘못된 입력 형식입니다!";
+                    return;
+                }
+                pairs.push({ rem, mod });
+            }
+
+            let product = 1;
+            let steps = "계산 과정:\n\n";
+            pairs.forEach(pair => product *= pair.mod);
+            
+            let result = 0;
+            let sum = 0;
+            pairs.forEach((pair, i) => {
+                const Ni = product / pair.mod;
+                const Mi = modInverse(Ni, pair.mod);
+                const term = pair.rem * Mi * Ni;
+                result += term;
+                sum += term;
+                steps += `n_${i+1}: ${pair.rem} × ${Mi} × ${Ni} = ${term}\n`;
+                if (i === 1) {
+                    steps += `n_1 + n_2 = ${sum}\n`;
+                }
+            });
+
+            result = (result % product + product) % product;
+            document.getElementById('result').innerHTML = `해: <b>x ≡ ${result} (mod ${product})</b>`;
+            document.getElementById('steps').innerText = steps;
+        }
+
+        function gcd(a, b) {
+            while (b !== 0) [a, b] = [b, a % b];
+            return a;
+        }
+
+        function modInverse(a, m) {
+            let [oldM, m0] = [m, m];
+            let [x0, x1] = [0, 1];
+            while (a > 1) {
+                const q = Math.floor(a / m);
+                [a, m] = [m, a % m];
+                [x0, x1] = [x1 - q * x0, x0];
+            }
+            return x1 < 0 ? x1 + m0 : x1;
+        }
+    </script>
+</body>
+</html>

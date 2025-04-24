@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헨젤의 보조정리 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        input, button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #3e8e41;
+        }
+        
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>헨젤의 보조정리 계산기 f(x)≡0 (mod p^k)</h1>
+        <p>다항식 f(x)를 입력하세요 (예: x^2+x+1):</p>
+        <input type="text" id="polynomial" placeholder="다항식 입력">
+        <p> 소수 p와 거듭제곱 k를 입력하세요:</p>
+        <input type="number" id="p" placeholder="p">
+        <input type="number" id="k" placeholder="k">
+        <br>
+        <button onclick="solve()">계산하기</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        let output = "";
+
+        function solve() {
+            output = "";
+            const polynomialStr = document.getElementById('polynomial').value.trim();
+            const p = parseInt(document.getElementById('p').value);
+            const k = parseInt(document.getElementById('k').value);
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "";
+
+            // 유효성 검사
+            if (isNaN(p) || isNaN(k) || p <= 1 || k < 1) {
+                resultDiv.innerHTML = '<div class="error">p는 2 이상, k는 1 이상의 정수여야 합니다.</div>';
+                return;
+            }
+
+            const coeffs = parsePolynomial(polynomialStr);
+            if (!coeffs) {
+                resultDiv.innerHTML = '<div class="error">올바른 다항식을 입력해주세요. 예: x^4 + 5x^2 + 8x + 1</div>';
+                return;
+            }
+
+            log(`다항식: ${polynomialStr}`);
+            log(`p = ${p}, k = ${k}\n`);
+
+            // 1단계: mod p에서 모든 초기 해 찾기
+            log("1단계: mod p에서 초기 해 찾기");
+            const initialSolutions = findAllSolutions(coeffs, p, 1);
+            if (initialSolutions.length === 0) {
+                log("해가 존재하지 않습니다.");
+                resultDiv.innerHTML = output;
+                return;
+            }
+            log(`초기 해: ${initialSolutions.join(', ')}\n`);
+
+            // 2단계: 각 초기 해를 p^k까지 확장
+            log("2단계: 헨젤의 보조정리를 사용하여 해 확장");
+            const finalSolutions = new Set();
+            for (const x0 of initialSolutions) {
+                log(`초기 해 ${x0}에 대한 확장:`);
+                liftSolutions(coeffs, x0, p, k, finalSolutions);
+                log("");
+            }
+
+            // 결과 출력
+            if (finalSolutions.size === 0) {
+                log("최종 결과: 해가 존재하지 않습니다.");
+            } else {
+                const solutions = Array.from(finalSolutions).sort((a, b) => a - b);
+                log(`최종 결과: ${solutions.map(x => `x ≡ ${x} (mod ${Math.pow(p, k)})`).join(', ')}`);
+            }
+
+            resultDiv.innerHTML = output;
+        }
+
+        function parsePolynomial(str) {
+            const terms = str.match(/[+-]?\s*\d*\.?\d*x\^?\d*|[+-]?\s*\d+/g) || [];
+            const coeffs = [0, 0, 0, 0, 0]; // [x^4, x^3, x^2, x, 상수]
+
+            for (let term of terms) {
+                term = term.replace(/\s/g, '');
+                let sign = 1;
+                if (term.startsWith('-')) {
+                    sign = -1;
+                    term = term.slice(1);
+                } else if (term.startsWith('+')) {
+                    term = term.slice(1);
+                }
+
+                if (term === 'x') {
+                    coeffs[3] += 1 * sign;
+                } else if (term.includes('x^')) {
+                    const [coeff, power] = term.split('x^');
+                    coeffs[4 - parseInt(power)] += (coeff === '' ? 1 : parseInt(coeff)) * sign;
+                } else if (term.includes('x')) {
+                    const coeff = term.replace('x', '') || '1';
+                    coeffs[3] += parseInt(coeff) * sign;
+                } else {
+                    coeffs[4] += parseInt(term || '0') * sign;
+                }
+            }
+            return coeffs;
+        }
+
+        function liftSolutions(coeffs, xCurrent, p, k, solutions, currentPower = 1) {
+            if (currentPower === k) {
+                solutions.add(xCurrent);
+                log(`  최종 해: x ≡ ${xCurrent} (mod ${Math.pow(p, k)})`);
+                return;
+            }
+
+            const nextPower = currentPower + 1;
+            const modulus = Math.pow(p, nextPower);
+
+            const fPrime = evaluateDerivative(coeffs, xCurrent, p);
+            const fx = evaluatePolynomial(coeffs, xCurrent, modulus);
+
+            log(`  mod ${p}^${nextPower} 확장:`);
+            log(`    f(${xCurrent}) ≡ ${fx} (mod ${modulus})`);
+            log(`    f'(${xCurrent}) ≡ ${fPrime} (mod ${p})`);
+
+            if (fx % Math.pow(p, currentPower) !== 0) {
+                log(`    f(${xCurrent}) ≢ 0 (mod ${Math.pow(p, currentPower)}), 해가 존재하지 않음`);
+                return;
+            }
+
+            if (fPrime % p !== 0) {
+                const t = (-fx / Math.pow(p, currentPower)) * modInverse(fPrime, p);
+                const xNext = (xCurrent + t * Math.pow(p, currentPower)) % modulus;
+                log(`    t ≡ ${t} (mod ${p})`);
+                log(`    다음 해: ${xNext}`);
+                liftSolutions(coeffs, xNext, p, k, solutions, nextPower);
+            } else {
+                log(`    f'(${xCurrent}) ≡ 0 (mod ${p}), 모든 가능한 해 시도`);
+                for (let t = 0; t < p; t++) {
+                    const xNext = xCurrent + t * Math.pow(p, currentPower);
+                    if (evaluatePolynomial(coeffs, xNext, modulus) === 0) {
+                        log(`    가능한 해: ${xNext}`);
+                        liftSolutions(coeffs, xNext, p, k, solutions, nextPower);
+                    }
+                }
+            }
+        }
+
+        function findAllSolutions(coeffs, p, k) {
+            const solutions = new Set();
+            const modulus = Math.pow(p, k);
+            for (let x = 0; x < modulus; x++) {
+                if (evaluatePolynomial(coeffs, x, modulus) === 0) {
+                    solutions.add(x);
+                }
+            }
+            return Array.from(solutions);
+        }
+
+        function evaluatePolynomial(coeffs, x, mod) {
+            let result = 0;
+            for (let i = 0; i < coeffs.length; i++) {
+                result = (result + coeffs[i] * Math.pow(x, coeffs.length - 1 - i)) % mod;
+            }
+            return (result + mod) % mod;
+        }
+
+        function evaluateDerivative(coeffs, x, mod) {
+            let result = 0;
+            for (let i = 0; i < coeffs.length - 1; i++) {
+                result = (result + (coeffs.length - 1 - i) * coeffs[i] * Math.pow(x, coeffs.length - 2 - i)) % mod;
+            }
+            return (result + mod) % mod;
+        }
+
+        function modInverse(a, m) {
+            a = ((a % m) + m) % m;
+            let oldR = a, r = m;
+            let oldS = 1, s = 0;
+
+            while (r !== 0) {
+                const quotient = Math.floor(oldR / r);
+                [oldR, r] = [r, oldR - quotient * r];
+                [oldS, s] = [s, oldS - quotient * s];
+            }
+
+            return oldR === 1 ? (oldS % m + m) % m : 1;
+        }
+
+        function log(message) {
+            output += message + "\n";
+        }
+    </script>
+</body>
+</html>
