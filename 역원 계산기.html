@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>역원 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .calculator {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+        input, button {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #d32f2f;
+            border: 1px solid #ef9a9a;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>역원 계산기</h2>
+        <div>
+            <label>숫자 (a): </label>
+            <input type="number" id="a" placeholder="정수 입력">
+        </div>
+        <div>
+            <label>mod (m): </label>
+            <input type="number" id="m" placeholder="mod 입력">
+        </div>
+        <button onclick="calculateInverse()">계산하기</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        function gcdExtended(a, b) {
+            if (b === 0) return [a, 1, 0];
+            const [g, x1, y1] = gcdExtended(b, a % b);
+            return [g, y1, x1 - Math.floor(a / b) * y1];
+        }
+
+        function modInverse(a, m) {
+            const [g, x] = gcdExtended(a, m);
+            if (g !== 1) return null; // 역원이 존재하지 않음
+            return (x % m + m) % m; // 양수로 변환
+        }
+
+        function calculateInverse() {
+            const a = parseInt(document.getElementById('a').value);
+            const m = parseInt(document.getElementById('m').value);
+            const resultDiv = document.getElementById('result');
+
+            if (isNaN(a) || isNaN(m) || m <= 0) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = "올바른 숫자를 입력해주세요!";
+                return;
+            }
+
+            const inverse = modInverse(a, m);
+            
+            if (inverse === null) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `역원이 존재하지 않습니다!<br>
+                                      (∵ gcd(${a}, ${m}) ≠ 1)`;
+            } else {
+                resultDiv.className = 'result success';
+                resultDiv.innerHTML = `${a}<sup>-1</sup> ≡ ${inverse} (mod ${m})<br>
+                                      검증: ${a} × ${inverse} = ${a * inverse}<br>
+                                      ${a * inverse} (mod ${m}) = ${(a * inverse) % m}`;
+            }
+        }
+    </script>
+</body>
+</html>
