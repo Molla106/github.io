@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>수학교육학 암기</title>
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      text-align: center;
+      margin: 20px;
+      background-color: #f5f5f5;
+    }
+    #topic-selection, #question-box, #answer-box, #all-questions-box {
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #3e8e41;
+    }
+    .topic-checkbox {
+      margin-right: 10px;
+    }
+    #topics-form {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #topics-form input[type="checkbox"] {
+      margin-right: 5px;
+    }
+    #topics-form label {
+      margin-bottom: 10px;
+    }
+    #answer-box, #all-questions-box {
+      display: none; /* 정답과 모든 문제는 처음엔 숨김 */
+    }
+    h1 {
+      color: #333; /* 제목 색상 변경 */
+    }
+    h2 {
+      color: #666; /* 소제목 색상 변경 */
+    }
+    ul {
+      text-align: left; /* 리스트 왼쪽 정렬 */
+      padding-left: 20px; /* 리스트 왼쪽 여백 */
+    }
+    ul li {
+      margin-bottom: 10px; /* 리스트 간격 추가 */
+    }
+    p#answer-display {
+      text-align: left; /* 답을 왼쪽 정렬 */
+      margin-left: 20px; /* 약간의 여백 추가 */
+    }
+  </style>
+</head>
+<body>
+  <h1>수학교육학 암기</h1>
+
+  <!-- 주제 선택 -->
+  <div id="topic-selection">
+    <h2>주제를 선택하세요:</h2>
+    <form id="topics-form">
+      <!-- 체크박스가 동적으로 추가됩니다 -->
+    </form>
+    <button onclick="applySelectedTopics()">주제 적용</button>
+  </div>
+
+  <!-- 문제 출력 -->
+  <div id="question-box">
+    <h2>문제:</h2>
+    <p id="question-display">주제를 선택하고 시작하세요!</p>
+    <button onclick="showAnswer()">정답 확인하기</button>
+    <button onclick="toggleAllQuestions()">모든 문제 보기</button>
+  </div>
+
+  <!-- 정답 출력 -->
+  <div id="answer-box">
+    <h2>정답:</h2>
+    <p id="answer-display"></p>
+    <button onclick="nextQuestion()">다음 문제</button>
+  </div>
+
+  <!-- 모든 문제 출력 -->
+  <div id="all-questions-box">
+    <h2>모든 문제:</h2>
+    <ul id="all-questions-list"></ul>
+  </div>
+
+<script>
+// 주제별 문제와 답을 저장한 객체
+const topicQuestions = {
+  "수교론": [
+    { question: "피아제 인지 발달 - 균형화 이론\n쉠 : □□과 □□을 □□ 가능하게 하고 □□□할 수 있게 하는 □□□□\n동화 : □□의 어떤 □을 고수하면서 가능한 한 □□ □□□ □□을 그에 □□시키려고 시도하는 보수적 기능, □□□ □□ □□에 의한 □□□ □□\n조절 : 당면한 문제를 해결하기 위하여 □□□ □을 □□, □□하는 적응 기능\n환경에 적응하는 과정에서 끊임없이 일어나는 인지적 균형의 파괴와, 동화 및 조절에 의한 새로운 □□□가 반복되는 □의 끊임없는 □□□ 과정이 □□□□이다.", answer: "피아제 인지 발달 - 균형화 이론\n쉠 : 행동과 조작을 반복 가능하게 하고 일반화할 수 있게 하는 인지구조\n동화 : 기존의 어떤 쉠을 고수하면서 가능한 한 넓은 범위의 상황을 그에 종속시키려고 시도하는 보수적 기능, 기존의 인지 구조에 의한 대상의 해석\n조절 : 당면한 문제를 해결하기 위하여 자신의 쉠을 조절, 분화하는 적응 기능\n환경에 적응하는 과정에서 끊임없이 일어나는 인지적 균형의 파괴와, 동화 및 조절에 의한 새로운 균형화가 반복되는 쉠의 끊임없는 재구성 과정이 인지발달이다." },
+    { question: "웹 페이지 제목을 설정하는 태그는?", answer: "<title>" },
+  ],
+  "수교재": [
+    { question: "CSS에서 글꼴 크기를 설정하는 속성은?", answer: "font-size" },
+    { question: "CSS에서 배경색을 설정하는 속성은?", answer: "background-color" }
+  ],
+  "2022 개정 교육과정": [
+    { question: "JavaScript에서 배열의 길이를 확인하는 방법은?", answer: ".length" },
+    { question: "JavaScript에서 콘솔에 메시지를 출력하는 함수는?", answer: "console.log()" }
+  ],
+};
+
+// 현재 선택된 주제의 문제 목록
+let currentQuestions = [];
+
+// 초기화 함수 (주제 체크박스 생성)
+function initializeTopics() {
+  const topicsForm = document.getElementById('topics-form');
+
+  // 객체의 키(주제 이름)를 가져와 체크박스로 추가
+  for (const topic in topicQuestions) {
+    const label = document.createElement('label');
+    
+	label.classList.add('topic-checkbox');
+
+	const checkbox = document.createElement('input');
+	checkbox.type = 'checkbox';
+	checkbox.value = topic;
+
+	label.appendChild(checkbox);
+	label.appendChild(document.createTextNode(topic));
+	
+	topicsForm.appendChild(label);
+  }
+}
+
+// 선택된 주제를 적용
+function applySelectedTopics() {
+	const selectedTopics = Array.from(document.querySelectorAll('#topics-form input[type="checkbox"]:checked')).map(checkbox => checkbox.value);
+
+	if(selectedTopics.length ===0){
+	alert('최소 하나 이상의 주제를 선택해주세요!');
+	currentQuestions=[];document.getElementById('question-display').innerText='주제를 선택하고 시작하세요!';
+	document.getElementById('answer-box').style.display='none';return;}
+
+	// 선택된 주제의 모든 문제를 합침 
+	currentQuestions=selectedTopics.flatMap(topic=>topicQuestions[topic]);
+	nextQuestion(); // 첫 번째 문제 출력
+}
+
+// 랜덤 문제 출력 함수 
+function nextQuestion(){
+	if(currentQuestions.length===0){
+		alert('문제가 없습니다. 다른 주제를 선택하세요!');
+		return;}
+
+	const randomIndex=Math.floor(Math.random()*currentQuestions.length);
+	const selectedQA=currentQuestions[randomIndex];
+
+	document.getElementById('question-display').innerText=selectedQA.question;document.getElementById('answer-display').innerText=selectedQA.answer;
+
+	// 정답 박스 숨기기 
+	document.getElementById('answer-box').style.display='none';
+}
+
+// 정답 확인 함수 
+function showAnswer(){
+	document.getElementById('answer-box').style.display='block';
+}
+
+// 모든 문제 보기/닫기 토글 함수
+function toggleAllQuestions() {
+	const allQuestionsBox = document.getElementById('all-questions-box');
+	const allQuestionsList = document.getElementById('all-questions-list');
+
+	if (allQuestionsBox.style.display === 'block') {
+		// 닫기 동작
+		allQuestionsBox.style.display = 'none';
+	} else {
+		// 열기 동작
+		allQuestionsList.innerHTML = ''; // 기존 내용 초기화
+		currentQuestions.forEach((qa, index) => {
+			const questionItem = document.createElement('li');
+			questionItem.innerHTML = `<b>${index +1}. ${qa.question}</b><br><br><i>정답:</i> ${qa.answer}<br><br><br>`;
+			allQuestionsList.appendChild(questionItem);
+		});
+		allQuestionsBox.style.display = 'block';
+	}
+}
+
+// 페이지 로드 시 초기화 
+document.addEventListener("DOMContentLoaded", initializeTopics);
+</script>
+
+</body>
+</html>
