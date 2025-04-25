@@ -76,7 +76,7 @@
 
   <!-- 주제 선택 -->
   <div id="topic-selection">
-    <h2>주제를 선택하세요:</h2>
+    <h2>주제를 선택하세요</h2>
     <form id="topics-form">
       <!-- 체크박스가 동적으로 추가됩니다 -->
     </form>
@@ -88,21 +88,21 @@
       
       <!-- 문제 출력 -->
       <div id="question-box">
-        <h2>문제:</h2>
+        <h2>문제</h2>
         <p id="question-display">주제를 선택하고 시작하세요!</p>
         <button onclick="showAnswer()">정답 확인하기</button>
       </div>
 
   <!-- 정답 출력 -->
   <div id="answer-box">
-    <h2>정답:</h2>
+    <h2>정답</h2>
     <p id="answer-display"></p>
     <button onclick="nextQuestion()">다음 문제</button>
   </div>
 
-  <div style="margin-top: 20px;">
-    <button onclick="location.href='index.html'">메인 페이지로로 돌아가기</button>
-  </div>
+  <div style="margin-top: 20px; display: flex; justify-content: center;">
+    <button onclick="location.href='index.html'">메인 페이지로 돌아가기</button>
+</div>
 
 <script>
 // 주제별 문제와 답을 저장한 객체
