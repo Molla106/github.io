@@ -17,8 +17,18 @@
         input, button { font-size: 16px; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 5px; }
         button { background-color: #4CAF50; color: #fff; cursor: pointer; }
         button:hover { background-color: #3e8e41; }
-        .delete-btn { background-color: #f44336; color: white; }
-        .delete-btn:hover { background-color: #d32f2f; }
+        .delete-btn {
+            background-color: #f44336; /* 빨간색 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .delete-btn:hover {
+            background-color: #d32f2f; /* 어두운 빨간색 */
+        }
         #result, #steps { margin-top: 20px; padding: 10px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 5px; }
         #steps { white-space: pre-wrap; font-family: monospace; }
         .input-group { margin-bottom: 10px; }
@@ -35,14 +45,14 @@
         <h1>중국인 나머지 정리 계산기</h1>
         <div id="inputs">
             <div class="input-group">
-                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17">
+                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
                 <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">
-                <button class="delete-btn" onclick="deleteInput(this)">삭제</button>
             </div>
         </div>
         <div class="button-container">
             <button onclick="addInput()">입력 추가</button>
             <button onclick="calculateCRT()">계산하기</button>
+            <button class="delete-btn" onclick="deleteLastInput()">삭제</button>
         </div>
         <div id="result"></div>
         <div id="steps"></div>
@@ -86,15 +96,16 @@
             const newInputGroup = document.createElement('div');
             newInputGroup.classList.add('input-group');
             newInputGroup.innerHTML = `
-                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17">
-                <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">
-                <button class="delete-btn" onclick="deleteInput(this)">삭제</button>`;
+                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
+                <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">`;
             inputsDiv.appendChild(newInputGroup);
         }
 
-        function deleteInput(btn) {
-            if (document.querySelectorAll('.input-group').length > 1) {
-                btn.parentElement.remove();
+        function deleteLastInput() {
+            const inputsDiv = document.getElementById('inputs');
+            const inputGroups = inputsDiv.querySelectorAll('.input-group');
+            if (inputGroups.length > 1) {
+                inputsDiv.removeChild(inputGroups[inputGroups.length - 1]); // 가장 마지막 입력 그룹 삭제
             } else {
                 alert("최소 하나의 입력은 남아야 합니다!");
             }

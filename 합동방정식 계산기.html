@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>합동방정식 계산기</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        input, button {
+            font-size: 16px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        button:hover {
+            background-color: #3e8e41;
+        }
+        
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>합동방정식 계산기</h1>
+        <h2>f(x)≡0 (mod m)</h2>
+        <p>다항식 f(x)를 입력하세요 (예: x^2+x+1):</p>
+        <input type="text" id="polynomial" placeholder="다항식 입력">
+        <p>m을 입력하세요:</p>
+        <input type="number" id="modulus" placeholder="m">
+        <br>
+        <button onclick="solve()">계산하기</button>
+        <div id="result"></div>
+    </div>
+  
+    <div style="margin-top: 20px; display: flex; justify-content: center;">
+        <button onclick="location.href='index.html'">메인 페이지로 돌아가기</button>
+    </div>
+    
+    <script>
+        function solve() {
+            const polynomialStr = document.getElementById('polynomial').value.trim();
+            const modulus = parseInt(document.getElementById('modulus').value);
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "";
+
+            // 유효성 검사
+            if (isNaN(modulus) || modulus <= 1) {
+                resultDiv.innerHTML = '<div class="error">m은 2 이상의 정수여야 합니다.</div>';
+                return;
+            }
+
+            const coeffs = parsePolynomial(polynomialStr);
+            if (!coeffs) {
+                resultDiv.innerHTML = '<div class="error">올바른 다항식을 입력해주세요. 예: x^4 + 5x^2 + 8x + 1</div>';
+                return;
+            }
+
+            let solutions = [];
+            
+            // 모든 값을 대입하여 해를 찾음
+            for (let x = 0; x < modulus; x++) {
+                const fx = evaluatePolynomial(coeffs, x, modulus);
+                if (fx === 0) {
+                    solutions.push(x);
+                }
+            }
+
+            // 결과 출력
+            if (solutions.length === 0) {
+                resultDiv.innerHTML = "해가 존재하지 않습니다.";
+            } else {
+                resultDiv.innerHTML = `해: ${solutions.map(x => `x ≡ ${x} (mod ${modulus})`).join(', ')}`;
+            }
+        }
+
+        function parsePolynomial(str) {
+            const terms = str.match(/[+-]?\s*\d*\.?\d*x\^?\d*|[+-]?\s*\d+/g) || [];
+            
+			// 다항식의 최대 차수를 자동으로 감지하여 배열 크기를 설정합니다.
+			let maxDegree = terms.reduce((max, term) => {
+				if (term.includes('x^')) {
+					const degree = parseInt(term.split('^')[1]);
+					return Math.max(max, degree);
+				} else if (term.includes('x')) {
+					return Math.max(max, 1);
+				}
+				return max;
+			}, 0);
+
+			const coeffs = new Array(maxDegree + 1).fill(0);
+
+			for (let term of terms) {
+				term = term.replace(/\s/g, '');
+				let sign = term.startsWith('-') ? -1 : 1;
+
+				if (term.startsWith('+') || term.startsWith('-')) {
+					term = term.slice(1);
+				}
+
+				if (term === 'x') {
+					coeffs[coeffs.length - 2] += sign; // x는 차수가 1
+				} else if (term.includes('x^')) {
+					const [coeff, power] = term.split('x^');
+					const parsedCoeff = coeff === '' ? sign : sign * parseInt(coeff);
+					coeffs[coeffs.length - parseInt(power) - 1] += parsedCoeff; // 차수에 따라 위치 설정
+				} else if (term.includes('x')) {
+					const coeff = term.replace('x', '') || '1';
+					coeffs[coeffs.length - 2] += sign * parseInt(coeff); // x는 차수가 1
+				} else {
+					coeffs[coeffs.length - 1] += sign * parseInt(term); // 상수항
+				}
+			}
+
+			return coeffs.reverse(); // 배열을 역순으로 반환하여 [상수항, x^1, x^2...] 형태로 정렬
+		}
+
+		function evaluatePolynomial(coeffs, x, mod) {
+			let result = coeffs.reduce((sum, coeff, index) => sum + coeff * Math.pow(x, index), 0);
+			return ((result % mod) + mod) % mod; // 항상 양수로 반환
+		}
+    </script>
+</body>
+</html>
