@@ -22,6 +22,12 @@
         #result, #steps { margin-top: 20px; padding: 10px; background-color: #f0f0f0; border: 1px solid #ddd; border-radius: 5px; }
         #steps { white-space: pre-wrap; font-family: monospace; }
         .input-group { margin-bottom: 10px; }
+        .button-container {
+            display: flex;
+            justify-content: center; /* 버튼들을 중앙 정렬 */
+            gap: 20px; /* 버튼 간의 간격을 20px로 설정 */
+            margin-top: 10px; /* 버튼 위쪽 여백 추가 */
+        }
     </style>
 </head>
 <body>
@@ -34,8 +40,10 @@
                 <button class="delete-btn" onclick="deleteInput(this)">삭제</button>
             </div>
         </div>
-        <button onclick="addInput()">입력 추가</button>
-        <button onclick="calculateCRT()">계산하기</button>
+        <div class="button-container">
+            <button onclick="addInput()">입력 추가</button>
+            <button onclick="calculateCRT()">계산하기</button>
+        </div>
         <div id="result"></div>
         <div id="steps"></div>
     </div>
