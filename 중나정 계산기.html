@@ -45,7 +45,7 @@
         <h1>중국인 나머지 정리 계산기</h1>
         <div id="inputs">
             <div class="input-group">
-                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
+                <label>숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
                 <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">
             </div>
         </div>
@@ -96,7 +96,7 @@
             const newInputGroup = document.createElement('div');
             newInputGroup.classList.add('input-group');
             newInputGroup.innerHTML = `
-                <label>계산할 숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
+                <label>숫자 (a): </label><input type="text" class="rem" placeholder="예: 11^17"> <br>
                 <label>mod (n): </label><input type="text" class="mod" placeholder="예: 7">`;
             inputsDiv.appendChild(newInputGroup);
         }
@@ -130,27 +130,19 @@
             pairs.forEach(pair => product *= pair.mod);
             
             let result = 0;
-            let sum = 0;
             pairs.forEach((pair, i) => {
                 const Ni = product / pair.mod;
                 const Mi = modInverse(Ni, pair.mod);
                 const term = pair.rem * Mi * Ni;
                 result += term;
-                sum += term;
                 steps += `n_${i+1}: ${pair.rem} × ${Mi} × ${Ni} = ${term}\n`;
-                if (i === 1) {
-                    steps += `n_1 + n_2 = ${sum}\n`;
-                }
             });
 
             result = (result % product + product) % product;
+            steps += `\n최종 결과: x ≡ ${result} (mod ${product})`;
+
             document.getElementById('result').innerHTML = `해: <b>x ≡ ${result} (mod ${product})</b>`;
             document.getElementById('steps').innerText = steps;
-        }
-
-        function gcd(a, b) {
-            while (b !== 0) [a, b] = [b, a % b];
-            return a;
         }
 
         function modInverse(a, m) {

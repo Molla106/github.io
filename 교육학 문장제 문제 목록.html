@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>문제 목록</title>
+  <title>교육학 문제 목록</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -93,30 +93,36 @@
   </style>
 </head>
 <body>
-  <h1>문제 목록</h1>
+  <h1>교육학 문제 목록</h1>
 
-  <!-- 주제 선택 -->
-  <div id="topic-selection">
-    <h2>주제를 선택하세요</h2>
-    <form id="topics-form">
-      <!-- 체크박스가 동적으로 추가됩니다 -->
-    </form>
-    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-      <button onclick="applySelectedTopics()">주제 적용</button>
-      <button onclick="location.href='교육학 문장제 암기.html'">퀴즈 보기</button>
-    </div>
+ <!-- 주제 선택 -->
+ <div id="topic-selection">
+  <h2>주제를 선택하세요</h2>
+  <form id="topics-form">
+    <!-- 체크박스가 동적으로 추가됩니다 -->
+  </form>
+  <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+    <button onclick="applySelectedTopics()">주제 적용</button>
+    <button onclick="location.href='교육학 문장제 암기.html'">퀴즈 보러가기</button>
   </div>
+</div>
 
-  <!-- 모든 문제 출력 -->
-  <div id="all-questions-box">
-    <div id="all-questions-list"></div>
-  </div>
+<!-- 모든 문제 출력 -->
+<div id="all-questions-box">
+  <div id="all-questions-list"></div>
+</div>
 
-<div style="margin-top: 20px; display: flex; justify-content: center;">
-    <button onclick="location.href='index.html'">메인 페이지로 돌아가기</button>
+<!-- 맨 위로 이동 및 메인 페이지로 돌아가기 버튼 -->
+<div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
+  <button onclick="scrollToTop()">맨 위로 이동</button>
+  <button onclick="location.href='index.html'">메인 페이지로 돌아가기</button>
 </div>
 
 <script>
+  // 페이지 상단으로 이동하는 함수
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' }); // 부드럽게 스크롤
+  }
   // 주제별 문제와 답을 저장한 객체
   const topicQuestions = {
     "교육 과정": [
@@ -899,76 +905,75 @@
 
   // 초기화 함수 (주제 체크박스 생성)
   function initializeTopics() {
-    const topicsForm = document.getElementById('topics-form');
+      const topicsForm = document.getElementById('topics-form');
 
-    // 객체의 키(주제 이름)를 가져와 체크박스로 추가
-    for (const topic in topicQuestions) {
-      const label = document.createElement('label');
+      // 객체의 키(주제 이름)를 가져와 체크박스로 추가
+      for (const topic in topicQuestions) {
+        const label = document.createElement('label');
 
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.value = topic;
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = topic;
 
-      label.appendChild(checkbox);
-      label.appendChild(document.createTextNode(topic));
-      topicsForm.appendChild(label);
-    }
-  }
-
-  // 선택된 주제를 적용
-  function applySelectedTopics() {
-    const selectedTopics = Array.from(document.querySelectorAll('#topics-form input[type="checkbox"]:checked'))
-      .map(checkbox => checkbox.value);
-
-    if (selectedTopics.length === 0) {
-      alert('최소 하나 이상의 주제를 선택해주세요!');
-      document.getElementById('all-questions-list').innerHTML = '';
-      return;
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(topic));
+        topicsForm.appendChild(label);
+      }
     }
 
-    // 선택된 주제의 모든 문제를 합침
-    const selectedQuestions = selectedTopics.flatMap(topic => topicQuestions[topic]);
+    // 선택된 주제를 적용
+    function applySelectedTopics() {
+      const selectedTopics = Array.from(document.querySelectorAll('#topics-form input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value);
 
-    // 모든 문제 출력
-    const allQuestionsList = document.getElementById('all-questions-list');
-    allQuestionsList.innerHTML = ''; // 기존 내용 초기화
-    selectedQuestions.forEach((qa, index) => {
-  const questionCard = document.createElement('div');
-  questionCard.classList.add('question-card');
+      if (selectedTopics.length === 0) {
+        alert('최소 하나 이상의 주제를 선택해주세요!');
+        document.getElementById('all-questions-list').innerHTML = '';
+        return;
+      }
 
-  // 문제 텍스트
-  const questionText = document.createElement('b');
-  questionText.textContent = `${index + 1}. ${qa.question}`;
-  questionCard.appendChild(questionText);
+      // 선택된 주제의 모든 문제를 합침
+      const selectedQuestions = selectedTopics.flatMap(topic => topicQuestions[topic]);
 
-  // 정답 보기 버튼
-  const showAnswerButton = document.createElement('button');
-  showAnswerButton.textContent = '정답 보기';
-  showAnswerButton.onclick = () => toggleAnswer(answerDiv);
-  questionCard.appendChild(showAnswerButton);
+      // 모든 문제 출력
+      const allQuestionsList = document.getElementById('all-questions-list');
+      allQuestionsList.innerHTML = ''; // 기존 내용 초기화
+      selectedQuestions.forEach((qa, index) => {
+        const questionCard = document.createElement('div');
+        questionCard.classList.add('question-card');
 
-  // 정답 텍스트
-  const answerDiv = document.createElement('div');
-  answerDiv.classList.add('answer');
-  answerDiv.innerHTML = qa.answer.replace(/\n/g, '<br>'); // 줄바꿈 처리
-  questionCard.appendChild(answerDiv);
+        // 문제 텍스트
+        const questionText = document.createElement('b');
+        questionText.textContent = `${index + 1}. ${qa.question}`;
+        questionCard.appendChild(questionText);
 
-  allQuestionsList.appendChild(questionCard);
-});
-  }
+        // 정답 보기 버튼
+        const showAnswerButton = document.createElement('button');
+        showAnswerButton.textContent = '정답 보기';
+        showAnswerButton.onclick = () => toggleAnswer(answerDiv);
+        questionCard.appendChild(showAnswerButton);
 
-  // 정답 보기/숨기기 토글 함수
-  function toggleAnswer(answerDiv) {
-    if (answerDiv.style.display === 'none' || answerDiv.style.display === '') {
-      answerDiv.style.display = 'block';
-    } else {
-      answerDiv.style.display = 'none';
+        // 정답 텍스트
+        const answerDiv = document.createElement('div');
+        answerDiv.classList.add('answer');
+        answerDiv.innerHTML = qa.answer.replace(/\n/g, '<br>'); // 줄바꿈 처리
+        questionCard.appendChild(answerDiv);
+
+        allQuestionsList.appendChild(questionCard);
+      });
     }
-  }
 
-  // 페이지 로드 시 초기화
-  document.addEventListener("DOMContentLoaded", initializeTopics);
-</script>
+    // 정답 보기/숨기기 토글 함수
+    function toggleAnswer(answerDiv) {
+      if (answerDiv.style.display === 'none' || answerDiv.style.display === '') {
+        answerDiv.style.display = 'block';
+      } else {
+        answerDiv.style.display = 'none';
+      }
+    }
 
+    // 페이지 로드 시 초기화
+    document.addEventListener("DOMContentLoaded", initializeTopics);
+  </script>
 </body>
 </html>
