@@ -61,44 +61,65 @@
 
         /* 하위 섹션 스타일 */
         .sub-section {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .sub-section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
+    .sub-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
 
-        .sub-section h3 {
-            margin-bottom: 10px;
-            color: #333;
-        }
+    .sub-section h3 {
+        margin-bottom: 10px;
+        color: #333;
+    }
 
-        .sub-section p {
-            color: #666;
-        }
+    .sub-section p {
+        color: #666;
+    }
 
-        /* 버튼 스타일 */
-        .sub-section a {
-            display: inline-block;
-            margin-top: 10px;
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
-        }
+    /* 버튼 스타일 */
+    .sub-section {
+        display: flex; /* 제목과 버튼을 가로로 정렬 */
+        justify-content: space-between; /* 제목과 버튼 사이 간격을 자동으로 조정 */
+        align-items: center; /* 제목과 버튼을 같은 높이에 맞춤 */
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
 
-        .sub-section a:hover {
-            background-color: #45a049;
-        }
+    .sub-section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sub-section h3 {
+        margin: 0; /* 제목의 여백 제거 */
+        color: #333;
+    }
+
+    .sub-section a {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    .sub-section a:hover {
+        background-color: #45a049;
+    }
     </style>
 </head>
 <body>
