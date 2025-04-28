@@ -121,6 +121,29 @@
         background-color: #45a049;
     }
     </style>
+    <head>
+        ...
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const navLinks = document.querySelectorAll("nav a");
+    
+                navLinks.forEach(link => {
+                    link.addEventListener("click", function (event) {
+                        event.preventDefault(); // 기본 동작 방지
+                        const targetId = this.getAttribute("href").substring(1); // # 제거
+                        const targetSection = document.getElementById(targetId);
+    
+                        if (targetSection) {
+                            window.scrollTo({
+                                top: targetSection.offsetTop - 20, // 약간의 여백 추가
+                                behavior: "smooth" // 부드러운 스크롤
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    </head>
 </head>
 <body>
     <header>
@@ -166,11 +189,11 @@
         </div>
         <h2>수학교육론</h2>
         <div class="sub-section" id="section7">
-            <h3>수교 퀴즈(미완)</h3>
+            <h3>수교 퀴즈</h3>
             <a href="수교 암기.html">Learn Now</a>
         </div>
             <div class="sub-section" id="section8">
-                <h3>수교 암기 문제(미완)</h3>
+                <h3>수교 암기 문제</h3>
                 <a href="수교 문제 목록.html">Learn Now</a>
         </div>
     </section>
