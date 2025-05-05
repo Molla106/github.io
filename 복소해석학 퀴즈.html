@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>복소해석학</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f2f2f2;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h2 {
+      color: #4CAF50;
+      font-size: 36px;
+    }
+
+    #questionImage, #answerImage {
+      width: 100%; /* 화면 너비에 맞게 최대 크기 */
+      height: auto; /* 비율 유지 */
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+      margin-top: 20px;
+    }
+
+    .buttons-container {
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 14px; /* 버튼 크기 줄임 */
+      padding: 10px 20px; /* 버튼 크기 줄임 */
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    #answerImage {
+      display: none;
+      margin-top: 20px; /* 답 이미지와 문제 이미지 사이에 여백 추가 */
+    }
+
+  </style>
+</head>
+<body>
+
+  <h2>복소해석학</h2>
+
+  <!-- 메인페이지로 돌아가기 버튼 -->
+  <button onclick="window.location.href='index.html'" style="margin-bottom: 20px;">메인페이지로 돌아가기</button>
+
+  <!-- 문제 이미지 -->
+  <img id="questionImage" src="" alt="문제 이미지"><br><br>
+  
+  <!-- 정답 이미지 (문제 바로 아래에 띄워짐) -->
+  <img id="answerImage" src="" alt="정답 이미지">
+
+  <!-- 버튼들 -->
+  <div class="buttons-container">
+    <button onclick="showAnswer()">정답 보기</button>
+    <button onclick="loadNewQuestion()">다음 문제</button>
+    <button onclick="window.location.href='복소해석학 문제.html'">전체 문제 보러 가기</button>
+  </div>
+  <script>
+    const totalImages = 91; // 문제 개수에 맞게 수정
+
+    let currentIndex = 1;
+    let usedQuestions = []; // 사용한 문제를 저장하는 배열
+
+    function loadNewQuestion() {
+      // 사용한 문제가 모두 나오면 배열을 초기화하고 다시 문제를 뽑을 수 있게 함
+      if (usedQuestions.length === totalImages) {
+        alert("모든 문제를 풀었습니다! 다시 시작합니다.");
+        usedQuestions = [];
+      }
+
+      // 중복되지 않는 문제 번호 뽑기
+      do {
+        currentIndex = Math.floor(Math.random() * totalImages) + 1;
+      } while (usedQuestions.includes(currentIndex));
+
+      // 문제 표시
+      document.getElementById("questionImage").src = `images/qhrthquestion/qhrthans%20${currentIndex}.png`;
+
+      // 정답 이미지 숨기기
+      const answerImg = document.getElementById("answerImage");
+      answerImg.style.display = "none";
+      answerImg.src = "";
+
+      // 사용된 문제 목록에 추가
+      usedQuestions.push(currentIndex);
+    }
+
+    function showAnswer() {
+      // 띄어쓰기가 있으면 %20으로 변경
+      const answerImg = document.getElementById("answerImage");
+      answerImg.src = `images/qhrthanswer/qhrthekq%20${currentIndex}.png`;
+      answerImg.style.display = "block"; // 정답 이미지 보이게
+    }
+
+    // 처음 실행 시 문제 1개 불러오기
+    window.onload = loadNewQuestion;
+  </script>
+
+</body>
+</html>
