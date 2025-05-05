@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>다변수 미적분학</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f2f2f2;
+      padding: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h2 {
+      color: #4CAF50;
+      font-size: 36px;
+      margin-bottom: 30px;
+    }
+
+    .question-answer-container {
+      width: 80%;
+      margin-bottom: 30px;
+    }
+
+    .question-answer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .question-number {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4CAF50;
+      margin-bottom: 10px;
+    }
+
+    .question-answer img {
+      width: 100%; /* 화면 너비에 맞게 최대 크기 */
+      height: auto; /* 비율 유지 */
+      border-radius: 15px;
+      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .buttons-container {
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 14px; /* 버튼 크기 줄임 */
+      padding: 10px 20px; /* 버튼 크기 줄임 */
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>다변수 미적분학</h2>
+
+  <div id="questionAnswerList" class="question-answer-container">
+    <!-- 문제와 정답이 나열될 공간 -->
+  </div>
+
+  <div class="buttons-container">
+    <!-- 퀴즈로 이동하는 버튼 -->
+    <button onclick="window.location.href='다변수 미적분학 퀴즈.html'">퀴즈 보러 가기</button>
+  </div>
+
+  <script>
+    const totalImages = 45; // 문제 개수에 맞게 수정
+    const questionAnswerList = document.getElementById("questionAnswerList");
+
+    function loadNewQuestions() {
+      questionAnswerList.innerHTML = ''; // 기존 내용 초기화
+
+      // 문제와 정답을 연속적으로 나열
+      for (let i = 1; i <= totalImages; i++) {
+        const questionAnswerDiv = document.createElement("div");
+        questionAnswerDiv.classList.add("question-answer");
+
+        // 문제 번호
+        const questionNumber = document.createElement("div");
+        questionNumber.classList.add("question-number");
+        questionNumber.innerText = `문제 ${i}`;
+        questionAnswerDiv.appendChild(questionNumber);
+
+        // 문제 이미지
+        const questionImg = document.createElement("img");
+        questionImg.src = `images/ekqustnquestion/ekqustnans%20${i}.png`;
+        questionAnswerDiv.appendChild(questionImg);
+
+        // 정답 이미지
+        const answerImg = document.createElement("img");
+        answerImg.src = `images/ekqustnanswer/ekqustnekq%20${i}.png`;
+        questionAnswerDiv.appendChild(answerImg);
+
+        // 문제와 정답을 리스트에 추가
+        questionAnswerList.appendChild(questionAnswerDiv);
+      }
+    }
+
+    // 페이지 로드 시 문제와 정답을 불러오기
+    window.onload = loadNewQuestions;
+  </script>
+
+</body>
+</html>
